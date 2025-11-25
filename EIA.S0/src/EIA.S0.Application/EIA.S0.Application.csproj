@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="FluentValidation" Version="12.1.0" />
+		<PackageReference Include="MediatR" Version="13.1.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\EIA.S0.Contracts\EIA.S0.Contracts.csproj" />
+		<ProjectReference Include="..\EIA.S0.Domain\EIA.S0.Domain.csproj" />
+	</ItemGroup>
+</Project>

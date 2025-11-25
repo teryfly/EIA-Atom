@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+	<PropertyGroup>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="10.0.0" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.0">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="10.0.1" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\EIA.S0.Contracts\EIA.S0.Contracts.csproj" />
+		<ProjectReference Include="..\EIA.S0.Application\EIA.S0.Application.csproj" />
+		<ProjectReference Include="..\EIA.S0.Domain\EIA.S0.Domain.csproj" />
+		<ProjectReference Include="..\EIA.S0.Infrastructure.EntityFrameworkCore.PostgreSQL\EIA.S0.Infrastructure.EntityFrameworkCore.PostgreSQL.csproj" />
+		<ProjectReference Include="..\EIA.S0.Infrastructure\EIA.S0.Infrastructure.csproj" />
+	</ItemGroup>
+
+</Project>

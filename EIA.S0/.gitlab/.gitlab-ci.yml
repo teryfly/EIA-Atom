@@ -1,0 +1,7 @@
+include:
+  - project: 'devops/ci-template'
+    file: '/dotnet/dotnet-10-unpub.ci.yml'
+
+deploy-dev-job:
+  tags:
+    - runner-k8s-dev-cd

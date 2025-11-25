@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.0" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Http" Version="10.0.0" />
+		<PackageReference Include="VZhen.Components.MessageQueue.Extensions" Version="6.12.0" />
+		<PackageReference Include="VZhen.Components.MessageQueue.Kafka" Version="6.12.1" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\EIA.S0.Contracts\EIA.S0.Contracts.csproj" />
+		<ProjectReference Include="..\EIA.S0.Domain\EIA.S0.Domain.csproj" />
+	</ItemGroup>
+
+</Project>

@@ -1,0 +1,92 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ${CI_PROJECT_NAME}-config
+  namespace: $CI_NAMESPACE
+data:
+  app.json: |
+    {
+      "PathBase": "/$CI_PROJECT_NAME",
+      "Database": {
+        "ConnectionString": "Server=kingbase-svc.infra;Port=54321;Database=nuclear-waste;User Id=system;Password=Ws123456789.",
+        "Engine": "PostgreSQL"
+      },
+      "OAuth": {
+        "Authority": "http://server.infra",
+        "Audience": "nuclear-waste-api"
+      }
+    }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: $CI_PROJECT_NAME
+  namespace: $CI_NAMESPACE
+  labels:
+    app: $CI_PROJECT_NAME
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: $CI_PROJECT_NAME
+  template:
+    metadata:
+      labels:
+        app: $CI_PROJECT_NAME
+    spec:
+      containers:
+      - name: $CI_PROJECT_NAME
+        image: $LOCAL_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME:$CI_COMMIT_BRANCH
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+        env:
+        - name: TZ
+          value: Asia/Shanghai
+        volumeMounts:
+          - name: config
+            mountPath: /app/appsettings.Production.json
+            subPath: app.json
+            readOnly: true
+        resources:
+            limits:
+              memory: "400Mi"
+              cpu: "200m"
+            requests:
+              memory: "200Mi"
+              cpu: "100m"
+      volumes:
+      - name: config
+        configMap:
+          name: ${CI_PROJECT_NAME}-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: $CI_PROJECT_NAME-svc
+  namespace: $CI_NAMESPACE
+spec:
+  selector:
+    app: $CI_PROJECT_NAME
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 8080
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: $CI_PROJECT_NAME-ingress
+  namespace: $CI_NAMESPACE
+spec:
+  ingressClassName: nginx
+  rules:
+    - http:
+        paths:
+          - path: /$CI_PROJECT_NAME/
+            pathType: Prefix
+            backend:
+              service:
+                name: $CI_PROJECT_NAME-svc
+                port:
+                  number: 80

@@ -1,0 +1,14 @@
+{
+  "eventId": "018f9a7b3cd84f3c9a8a4a3a23c9a1f1",
+  "eventType": "governance.doctype.changed.v1",
+  "source": "governance-bc",
+  "occurredAt": "2025-01-01T00:00:00Z",
+  "version": 1,
+  "payload": {
+    "docTypeId": "d7e7a5f3-6e3b-4e3d-9b4a-9b7c3cd8e7a5",
+    "docTypeCode": "TECH_DOC",
+    "name": "Technical Document",
+    "status": "ENABLED",
+    "operationType": "CREATED"
+  }
+}
