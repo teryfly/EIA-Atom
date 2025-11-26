@@ -66,7 +66,8 @@ internal static class InfrastructureExtensions
         // DocTypeService 注入事件发布委托
         services.AddScoped<DocTypeService>(sp =>
         {
-            var repo = sp.GetRequiredService<IRepository<DocType>>();
+            var docTypeRepo = sp.GetRequiredService<IRepository<DocType>>();
+            var phaseRepo = sp.GetRequiredService<IRepository<PhaseDefinition>>();
             var uow = sp.GetRequiredService<IUnitOfWork>();
             var timeProvider = sp.GetRequiredService<TimeProvider>();
             var cache = sp.GetRequiredService<DocTypeCache>();
@@ -75,7 +76,7 @@ internal static class InfrastructureExtensions
             Func<string, object, CancellationToken, Task> publishFunc =
                 (topic, payload, token) => publisher.PublishAsync(topic, payload);
 
-            return new DocTypeService(repo, uow, timeProvider, cache, publishFunc);
+            return new DocTypeService(docTypeRepo, phaseRepo, uow, timeProvider, cache, publishFunc);
         });
 
         // PhaseService 注入事件发布委托

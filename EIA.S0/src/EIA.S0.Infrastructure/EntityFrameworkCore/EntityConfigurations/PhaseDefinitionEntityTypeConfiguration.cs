@@ -33,12 +33,12 @@ public class PhaseDefinitionEntityTypeConfiguration : IEntityTypeConfiguration<P
             .HasComment("显示名称");
 
         builder.Property(x => x.Order)
-            .HasColumnName("order")
+            .HasColumnName("\"order\"")
             .IsRequired()
             .HasComment("顺序号");
 
-        builder.Property<List<string>>(nameof(PhaseDefinition.AllowedTransitionPhaseCodes))
-            .HasField(nameof(PhaseDefinition.AllowedTransitionPhaseCodes))
+        // 将 AllowedTransitionPhaseCodes 映射到 allowed_transitions jsonb 列
+        builder.Property(x => x.AllowedTransitionPhaseCodes)
             .HasColumnName("allowed_transitions")
             .HasColumnType("jsonb")
             .IsRequired()

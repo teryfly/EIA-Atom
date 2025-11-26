@@ -1,5 +1,6 @@
 using EIA.S0.Domain.Core.Exceptions;
 using EIA.S0.Domain.Core.Repositories;
+using EIA.S0.Domain.Core.Specifications.Queries;
 using EIA.S0.Domain.Governance.Entities;
 
 namespace EIA.S0.Application.Governance.DocTypes;
@@ -10,6 +11,7 @@ namespace EIA.S0.Application.Governance.DocTypes;
 public partial class DocTypeService
 {
     private readonly IRepository<DocType> _docTypeRepository;
+    private readonly IRepository<PhaseDefinition> _phaseRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly TimeProvider _timeProvider;
 
@@ -18,10 +20,12 @@ public partial class DocTypeService
     /// </summary>
     public DocTypeService(
         IRepository<DocType> docTypeRepository,
+        IRepository<PhaseDefinition> phaseRepository,
         IUnitOfWork unitOfWork,
         TimeProvider timeProvider)
     {
         _docTypeRepository = docTypeRepository;
+        _phaseRepository = phaseRepository;
         _unitOfWork = unitOfWork;
         _timeProvider = timeProvider;
     }
@@ -44,12 +48,29 @@ public partial class DocTypeService
     }
 
     /// <summary>
-    /// 校验 allowedPhases 中的每个阶段码在 PhaseDefinition 中存在（占位，后续接入 Phase 仓储）.
+    /// 校验 allowedPhases 中的每个阶段码在 PhaseDefinition 中存在.
     /// </summary>
-    private static Task EnsureAllAllowedPhasesExistAsync(IEnumerable<string> allowedPhases, CancellationToken cancellationToken)
+    private async Task EnsureAllAllowedPhasesExistAsync(IEnumerable<string> allowedPhases, CancellationToken cancellationToken)
     {
-        // TODO: 接入 PhaseDefinition 仓储进行存在性校验
-        return Task.CompletedTask;
+        var codes = (allowedPhases ?? Array.Empty<string>())
+            .Where(x => !string.IsNullOrWhiteSpace(x))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToList();
+
+        if (!codes.Any())
+        {
+            return;
+        }
+
+        foreach (var code in codes)
+        {
+            var spec = new PhaseByCodeSpecification(code);
+            var exists = await _phaseRepository.AnyAsync(spec);
+            if (!exists)
+            {
+                throw new DomainException($"allowedPhases 中的阶段编码[{code}]不存在.");
+            }
+        }
     }
 
     /// <summary>
@@ -72,8 +93,10 @@ public partial class DocTypeService
             throw new DomainException("DocType code 不能为空.");
         }
 
-        await EnsureAllAllowedPhasesExistAsync(allowedPhases, cancellationToken);
-        EnsureDefaultPhaseInAllowedPhases(allowedPhases, defaultPhase);
+        var allowedList = (allowedPhases ?? Array.Empty<string>()).ToList();
+
+        await EnsureAllAllowedPhasesExistAsync(allowedList, cancellationToken);
+        EnsureDefaultPhaseInAllowedPhases(allowedList, defaultPhase);
 
         var now = _timeProvider.GetUtcNow().UtcDateTime;
         var entity = new DocType(
@@ -81,7 +104,7 @@ public partial class DocTypeService
             code,
             name,
             description,
-            allowedPhases,
+            allowedList,
             defaultPhase,
             categoryId,
             aiDraftPromptTemplateId,
@@ -119,14 +142,16 @@ public partial class DocTypeService
             throw new DomainException("DocType 不存在.");
         }
 
-        await EnsureAllAllowedPhasesExistAsync(allowedPhases, cancellationToken);
-        EnsureDefaultPhaseInAllowedPhases(allowedPhases, defaultPhase);
+        var allowedList = (allowedPhases ?? Array.Empty<string>()).ToList();
+
+        await EnsureAllAllowedPhasesExistAsync(allowedList, cancellationToken);
+        EnsureDefaultPhaseInAllowedPhases(allowedList, defaultPhase);
 
         var now = _timeProvider.GetUtcNow().UtcDateTime;
         entity.UpdateBasicInfo(
             name,
             description,
-            allowedPhases,
+            allowedList,
             defaultPhase,
             categoryId,
             aiDraftPromptTemplateId,
@@ -167,5 +192,23 @@ public partial class DocTypeService
         await PublishDocTypeChangedAsync(entity, "DELETED", cancellationToken);
 
         return true;
+    }
+
+    /// <summary>
+    /// 通过 phaseCode 的规约（供 allowedPhases 校验使用）.
+    /// </summary>
+    private sealed class PhaseByCodeSpecification : BaseQuerySpecification<PhaseDefinition>
+    {
+        private readonly string _code;
+
+        public PhaseByCodeSpecification(string code)
+        {
+            _code = code;
+        }
+
+        public override System.Linq.Expressions.Expression<Func<PhaseDefinition, bool>> ToExpression()
+        {
+            return x => x.PhaseCode == _code;
+        }
     }
 }

@@ -37,9 +37,8 @@ public class DocTypeEntityTypeConfiguration : IEntityTypeConfiguration<DocType>
             .IsRequired(false)
             .HasComment("描述");
 
-        // 使用 backing field 存储 AllowedPhaseCodes 到 allowed_phases jsonb
-        builder.Property<List<string>>(nameof(DocType.AllowedPhaseCodes))
-            .HasField(nameof(DocType.AllowedPhaseCodes))
+        // 将 AllowedPhaseCodes 映射到 allowed_phases jsonb 列
+        builder.Property(x => x.AllowedPhaseCodes)
             .HasColumnName("allowed_phases")
             .HasColumnType("jsonb")
             .IsRequired()

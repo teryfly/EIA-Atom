@@ -18,11 +18,12 @@ public partial class DocTypeService
 
     public DocTypeService(
         IRepository<DocType> docTypeRepository,
+        IRepository<PhaseDefinition> phaseRepository,
         IUnitOfWork unitOfWork,
         TimeProvider timeProvider,
         DocTypeCache cache,
         Func<string, object, CancellationToken, Task> eventPublishFunc)
-        : this(docTypeRepository, unitOfWork, timeProvider)
+        : this(docTypeRepository, phaseRepository, unitOfWork, timeProvider)
     {
         _cache = cache;
         _eventPublishFunc = eventPublishFunc;
