@@ -22,13 +22,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Directory.Build.props = Directory.Build.props
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".gitlab", ".gitlab", "{C563A5F1-8C6D-42CC-81CF-5CC8645E3B7F}"
-	ProjectSection(SolutionItems) = preProject
-		.gitlab\.gitlab-ci.yml = .gitlab\.gitlab-ci.yml
-		.gitlab\Dockerfile = .gitlab\Dockerfile
-		.gitlab\k8s-deployment.tpl.yml = .gitlab\k8s-deployment.tpl.yml
-	EndProjectSection
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{893314D7-3618-41C7-8AAB-4016D7E74474}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EIA.S0.Domain.Tests", "tests\EIA.S0.Domain.Tests\EIA.S0.Domain.Tests.csproj", "{1C882FB2-7754-43B5-876C-9954A721059A}"

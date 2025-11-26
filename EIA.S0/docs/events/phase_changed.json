@@ -1,0 +1,14 @@
+{
+  "eventId": "018f9b7c3cd84f3c9a8a4a3a23c9a1f2",
+  "eventType": "governance.phase.changed.v1",
+  "source": "governance-bc",
+  "occurredAt": "2025-01-01T00:00:00Z",
+  "version": 1,
+  "payload": {
+    "phaseId": "f1b2c3d4-5678-4090-abcd-1234567890ab",
+    "phaseCode": "DRAFT",
+    "displayName": "Draft",
+    "isActive": true,
+    "operationType": "CREATED"
+  }
+}

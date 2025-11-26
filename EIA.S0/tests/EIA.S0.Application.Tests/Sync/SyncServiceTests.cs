@@ -11,7 +11,8 @@ public class SyncServiceTests
     [Fact]
     public async Task GetAllDocTypesAsync_ReturnsList()
     {
-        var repo = new Mock<IRepository<DocType>>();
+        var docTypeRepo = new Mock<IRepository<DocType>>();
+        var phaseRepo = new Mock<IRepository<PhaseDefinition>>();
         var spec = new Mock<IQuerySpecification<DocType>>();
 
         var list = new List<DocType>
@@ -20,10 +21,10 @@ public class SyncServiceTests
                 DateTime.UtcNow, DateTime.UtcNow)
         };
 
-        repo.Setup(r => r.GetListAsync(It.IsAny<IQuerySpecification<DocType>>()))
+        docTypeRepo.Setup(r => r.GetListAsync(It.IsAny<IQuerySpecification<DocType>>()))
             .ReturnsAsync(list);
 
-        var service = new SyncService(repo.Object);
+        var service = new SyncService(docTypeRepo.Object, phaseRepo.Object);
         var result = await service.GetAllDocTypesAsync(spec.Object);
 
         Assert.Single(result);

@@ -1,0 +1,199 @@
+openapi: 3.0.3
+info:
+  title: S0 Governance - PhaseDefinition API
+  version: 1.0.0
+paths:
+  /api/governance/phase:
+    get:
+      summary: Get PhaseDefinition list
+      operationId: listPhases
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - in: query
+          name: size
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 200
+            default: 50
+      responses:
+        '200':
+          description: PhaseDefinition list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Phase'
+    post:
+      summary: Create PhaseDefinition
+      operationId: createPhase
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePhaseRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreatePhaseResponse'
+        '400':
+          description: Validation error
+  /api/governance/phase/{id}:
+    get:
+      summary: Get PhaseDefinition by id
+      operationId: getPhase
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: PhaseDefinition
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Phase'
+        '404':
+          description: Not found
+    put:
+      summary: Update PhaseDefinition
+      operationId: updatePhase
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePhaseRequest'
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdatePhaseResponse'
+        '400':
+          description: Validation error
+        '404':
+          description: Not found
+    delete:
+      summary: Delete PhaseDefinition
+      operationId: deletePhase
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeletePhaseResponse'
+        '404':
+          description: Not found
+components:
+  schemas:
+    Phase:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        phaseCode:
+          type: string
+        displayName:
+          type: string
+        order:
+          type: integer
+        allowedTransitions:
+          type: array
+          items:
+            type: string
+        properties:
+          type: object
+          additionalProperties: true
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    CreatePhaseRequest:
+      type: object
+      required:
+        - phaseCode
+        - displayName
+        - order
+      properties:
+        phaseCode:
+          type: string
+        displayName:
+          type: string
+        order:
+          type: integer
+        allowedTransitions:
+          type: array
+          items:
+            type: string
+        properties:
+          type: object
+          additionalProperties: true
+          nullable: true
+    CreatePhaseResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+    UpdatePhaseRequest:
+      type: object
+      required:
+        - displayName
+        - order
+      properties:
+        displayName:
+          type: string
+        order:
+          type: integer
+        allowedTransitions:
+          type: array
+          items:
+            type: string
+        properties:
+          type: object
+          additionalProperties: true
+          nullable: true
+    UpdatePhaseResponse:
+      type: object
+      properties:
+        updated:
+          type: boolean
+    DeletePhaseResponse:
+      type: object
+      properties:
+        deleted:
+          type: boolean

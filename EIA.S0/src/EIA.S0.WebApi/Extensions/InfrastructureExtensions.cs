@@ -2,6 +2,7 @@ using EIA.S0.WebApi.Settings;
 using EIA.S0.Application.Governance.DocTypes;
 using EIA.S0.Application.Governance.Cache;
 using EIA.S0.Application.Governance.Sync;
+using EIA.S0.Application.Governance.Phases;
 using EIA.S0.Domain.Core.Repositories;
 using EIA.S0.Domain.Governance.Entities;
 using EIA.S0.Infrastructure.Governance.Repositories;
@@ -53,8 +54,14 @@ internal static class InfrastructureExtensions
         // DocType 缓存
         services.AddSingleton<DocTypeCache>();
 
+        // Phase 缓存
+        services.AddSingleton<PhaseCache>();
+
         // DocType 仓储
         services.AddScoped<IRepository<DocType>, DocTypeRepository>();
+
+        // PhaseDefinition 仓储
+        services.AddScoped<IRepository<PhaseDefinition>, PhaseRepository>();
 
         // DocTypeService 注入事件发布委托
         services.AddScoped<DocTypeService>(sp =>
@@ -69,6 +76,22 @@ internal static class InfrastructureExtensions
                 (topic, payload, token) => publisher.PublishAsync(topic, payload);
 
             return new DocTypeService(repo, uow, timeProvider, cache, publishFunc);
+        });
+
+        // PhaseService 注入事件发布委托
+        services.AddScoped<PhaseService>(sp =>
+        {
+            var phaseRepo = sp.GetRequiredService<IRepository<PhaseDefinition>>();
+            var docTypeRepo = sp.GetRequiredService<IRepository<DocType>>();
+            var uow = sp.GetRequiredService<IUnitOfWork>();
+            var timeProvider = sp.GetRequiredService<TimeProvider>();
+            var cache = sp.GetRequiredService<PhaseCache>();
+            var publisher = sp.GetRequiredService<EventPublisher>();
+
+            Func<string, object, CancellationToken, Task> publishFunc =
+                (topic, payload, token) => publisher.PublishAsync(topic, payload);
+
+            return new PhaseService(phaseRepo, docTypeRepo, uow, timeProvider, cache, publishFunc);
         });
 
         // SyncService
